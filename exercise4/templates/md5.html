@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MD5 Hash Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">CRYPTOGRAPHY AND NETWORK SECURITY LABORATORY</div>
+    <nav><ul><li><a href="{{ url_for('root') }}">← Back to Dashboard</a></li></ul></nav>
+  </aside>
+
+  <main class="content">
+    <header>
+      <h1>MD5 Hashing</h1>
+      <p style="color:var(--text-light);">Message Digest Algorithm 5</p>
+    </header>
+
+    <section class="form-section">
+      <form method="POST">
+        <div class="form-group">
+            <label>Input Text</label>
+            <textarea name="text" placeholder="Enter text to hash..." required style="height: 80px;">{{ input_text if input_text else '' }}</textarea>
+        </div>
+        
+        <button type="submit" style="background: var(--warning);">Generate Hash</button>
+      </form>
+
+      {% if error %}
+      <div class="error-message">Error: {{ error }}</div>
+      {% endif %}
+
+      {% if result %}
+      <div class="result-container">
+        <h3>MD5 Hash Output (Hex):</h3>
+        <div class="output-box" style="color: var(--warning);">{{ result }}</div>
+      </div>
+
+      {% if steps %}
+      <div class="result-container">
+        <h3>MD5 Computation Steps:</h3>
+
+        <!-- Initial Values -->
+        <div class="round-box">
+          <div class="round-header">
+            <span>🔢 Initial MD5 Values</span>
+          </div>
+          <div class="round-content">
+            <div class="step-row">
+              <span class="step-label">A</span>
+              <span class="step-value">{{ steps.initial_values.A }}</span>
+            </div>
+            <div class="step-row">
+              <span class="step-label">B</span>
+              <span class="step-value">{{ steps.initial_values.B }}</span>
+            </div>
+            <div class="step-row">
+              <span class="step-label">C</span>
+              <span class="step-value">{{ steps.initial_values.C }}</span>
+            </div>
+            <div class="step-row">
+              <span class="step-label">D</span>
+              <span class="step-value">{{ steps.initial_values.D }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Process Each Block -->
+        {% for block in steps.blocks %}
+        <div class="round-box">
+          <div class="round-header">
+            <span>📦 Block {{ block.block_number }} Processing</span>
+          </div>
+          <div class="round-content hidden">
+            <!-- Message Words -->
+            <div class="block-title">Message Words (M[0] to M[15]):</div>
+            {% for word in block.message_words %}
+            <div class="step-row">
+              <span class="step-value">{{ word }}</span>
+            </div>
+            {% endfor %}
+
+            <!-- Rounds -->
+            <div class="block-title" style="margin-top: 20px;">64 Rounds of Processing:</div>
+            {% for round in block.rounds %}
+            <div class="round-box" style="margin: 5px 0; border-left: 3px solid var(--primary);">
+              <div class="round-header" style="padding: 8px 12px; font-size: 12px;">
+                <span>Round {{ round.round }}: {{ round.function }}</span>
+              </div>
+              <div class="round-content hidden">
+                {% if round.round == 0 %}
+                <div class="step-row">
+                  <span class="step-label">Description</span>
+                  <span class="step-value">{{ round.description }}</span>
+                </div>
+                {% else %}
+                <div class="step-row">
+                  <span class="step-label">Function</span>
+                  <span class="step-value">{{ round.function }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">Message Index</span>
+                  <span class="step-value">g = {{ round.g_index }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">K[{{ round.round - 1 }}]</span>
+                  <span class="step-value">{{ round.K_value }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">Temp Calculation</span>
+                  <span class="step-value">{{ round.temp_calc }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">Temp Value</span>
+                  <span class="step-value">{{ round.temp }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">Left Rotate</span>
+                  <span class="step-value">{{ round.rotated }} (by {{ round.shift }} bits)</span>
+                </div>
+                {% endif %}
+                <div class="step-row">
+                  <span class="step-label">A</span>
+                  <span class="step-value">{{ round.A }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">B</span>
+                  <span class="step-value">{{ round.B }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">C</span>
+                  <span class="step-value">{{ round.C }}</span>
+                </div>
+                <div class="step-row">
+                  <span class="step-label">D</span>
+                  <span class="step-value">{{ round.D }}</span>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+
+            <!-- Cumulative Sum -->
+            <div class="block-separator"></div>
+            <div class="block-title">Block {{ block.block_number }} Summary:</div>
+            <div class="step-row">
+              <span class="step-label">Before Addition</span>
+              <span class="step-value">{{ block.cumulative_sum.before }}</span>
+            </div>
+            <div class="step-row">
+              <span class="step-label">Block Result</span>
+              <span class="step-value">{{ block.cumulative_sum.added }}</span>
+            </div>
+            <div class="step-row">
+              <span class="step-label">After Addition</span>
+              <span class="step-value">{{ block.cumulative_sum.after }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Final Hash -->
+        <div class="round-box">
+          <div class="round-header">
+            <span>🎯 Final MD5 Hash</span>
+          </div>
+          <div class="round-content">
+            <div class="step-row">
+              <span class="step-label">Final Hash</span>
+              <span class="step-value" style="color: var(--warning); font-weight: bold;">{{ steps.final_hash }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+    </section>
+  </main>
+
+  <script>
+    // Add click handlers for collapsible sections
+    document.addEventListener('DOMContentLoaded', function() {
+      const headers = document.querySelectorAll('.round-header');
+      headers.forEach(header => {
+        header.addEventListener('click', function() {
+          const content = this.nextElementSibling;
+          content.classList.toggle('hidden');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

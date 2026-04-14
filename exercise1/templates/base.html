@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Cryptography and Network Security Laboratory{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">CRYPTOGRAPHY AND NETWORK SECURITY LABORATORY</div>
+    <nav>
+      <ul>
+        <li>
+          <a href="{{ url_for('exercise', ex_id='ex1') }}" class="{{ 'active' if active_ex == 'ex1' else '' }}">
+            Exercise 1
+          </a>
+        </li>
+
+        <li>
+          <a href="{{ url_for('exercise', ex_id='ex2') }}" class="{{ 'active' if active_ex == 'ex2' else '' }}">
+            Exercise 2
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('exercise', ex_id='ex3') }}" class="{{ 'active' if active_ex == 'ex3' else '' }}">
+            Exercise 3
+          </a>
+        </li>
+        <!-- NEW EXERCISE 4 LINK -->
+        <li>
+          <a href="{{ url_for('exercise', ex_id='ex4') }}" class="{{ 'active' if active_ex == 'ex4' else '' }}">
+            Exercise 4
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+
+</html>

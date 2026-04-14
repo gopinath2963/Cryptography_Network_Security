@@ -1,0 +1,95 @@
+<!-- fermat.html -->
+{% extends "base.html" %}
+
+{% block title %}Fermat's Little Theorem{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+  <header class="cipher-header">
+    <h1>Fermat's Little Theorem</h1>
+    <p>Test primality and demonstrate the theorem</p>
+  </header>
+
+  <form method="POST" class="cipher-form">
+    <div class="form-group">
+      <label for="action">Choose operation:</label>
+      <select name="action" id="action" onchange="toggleInputs()">
+        <option value="primality" {{ 'selected' if request.form.action == 'primality' else '' }}>Primality Test</option>
+        <option value="theorem" {{ 'selected' if request.form.action == 'theorem' else '' }}>Theorem Demonstration</option>
+      </select>
+    </div>
+
+    <div id="primality-inputs" class="form-group" style="display: {{ 'block' if not request.form.action or request.form.action == 'primality' else 'none' }};">
+      <label for="n">Number to test (n):</label>
+      <input type="number" name="n" id="n" placeholder="Enter number > 1" min="2" value="{{ request.form.n if request.form.n else '' }}" required>
+    </div>
+
+    <div id="theorem-inputs" class="form-group" style="display: {{ 'block' if request.form.action == 'theorem' else 'none' }};">
+      <label for="a">Base (a):</label>
+      <input type="number" name="a" id="a" placeholder="Enter base 1 < a < p" min="1" value="{{ request.form.a if request.form.a else '' }}">
+      <label for="p">Prime (p):</label>
+      <input type="number" name="p" id="p" placeholder="Enter prime number" min="2" value="{{ request.form.p if request.form.p else '' }}">
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn btn-primary">Test</button>
+    </div>
+  </form>
+
+  {% if result %}
+  <div class="result-section">
+    <h3>Result</h3>
+    <div class="result-box">
+      <p><strong>{{ result }}</strong></p>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if steps %}
+  <div class="steps-section">
+    <h3>Steps</h3>
+    <div class="steps-box">
+      {% for step in steps %}
+      <p>{{ step }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="error-section">
+    <h3>Error</h3>
+    <div class="error-box">
+      <p>{{ error }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="info-section">
+    <h3>Fermat's Little Theorem:</h3>
+    <p>If p is a prime number and a is an integer not divisible by p, then:</p>
+    <p><strong>a^(p-1) ≡ 1 (mod p)</strong></p>
+    <ul>
+      <li><strong>Primality Test:</strong> If a^(n-1) ≢ 1 mod n for some a, then n is composite</li>
+      <li><strong>Theorem Demo:</strong> Verify the theorem for specific a and p</li>
+      <li>Note: Fermat's test can give false positives for Carmichael numbers</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function toggleInputs() {
+  const action = document.getElementById('action').value;
+  const primalityInputs = document.getElementById('primality-inputs');
+  const theoremInputs = document.getElementById('theorem-inputs');
+
+  if (action === 'primality') {
+    primalityInputs.style.display = 'block';
+    theoremInputs.style.display = 'none';
+  } else {
+    primalityInputs.style.display = 'none';
+    theoremInputs.style.display = 'block';
+  }
+}
+</script>
+{% endblock %}

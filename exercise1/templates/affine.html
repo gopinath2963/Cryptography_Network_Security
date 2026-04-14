@@ -1,0 +1,69 @@
+<!-- affine.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Affine Cipher</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">CRYPTOGRAPHY AND NETWORK SECURITY LABORATORY</div>
+    <nav><ul><li><a href="{{ url_for('root') }}">← Back to Dashboard</a></li></ul></nav>
+  </aside>
+
+  <main class="content">
+    <header><h1>Affine Cipher</h1></header>
+
+    <section class="form-section">
+      <form method="POST">
+
+        <div class="form-group">
+            <label>Input Text</label>
+            <textarea name="text" placeholder="Enter plaintext or ciphertext..." required>{{ request.form.get('text', '') }}</textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label>Key A (must be coprime with 26)</label>
+                <input type="number" name="a" placeholder="e.g., 5" value="{{ request.form.get('a', '') }}" required>
+                <small style="color: var(--text-light); font-size: 12px;">gcd(a, 26) = 1</small>
+            </div>
+
+            <div class="form-group">
+                <label>Key B (0-25)</label>
+                <input type="number" name="b" placeholder="e.g., 8" value="{{ request.form.get('b', '') }}" required>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" name="encrypt" style="background: var(--primary);">Encrypt</button>
+            <button type="submit" name="decrypt" style="background: var(--success);">Decrypt</button>
+        </div>
+      </form>
+
+      {% if error %}
+      <div class="error-message">Error: {{ error }}</div>
+      {% endif %}
+
+      {% if result %}
+      <div class="result-container">
+        <h3>Result ({{ mode }}):</h3>
+        <div class="output-box">{{ result }}</div>
+      </div>
+      {% endif %}
+
+      {% if steps %}
+      <div class="result-container">
+        <h3>Step-by-Step Process:</h3>
+        <div class="output-box">
+{% for step in steps %}
+{{ step }}
+{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

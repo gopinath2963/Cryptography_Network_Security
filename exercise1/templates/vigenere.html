@@ -1,0 +1,69 @@
+<!-- vigenere.html -->
+{% extends "base.html" %}
+
+{% block title %}Vigenère Cipher{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+  <header class="cipher-header">
+    <h1>Vigenère Cipher</h1>
+    <p>Polyalphabetic substitution cipher using a keyword</p>
+  </header>
+
+  <form method="POST" class="cipher-form">
+    <div class="form-group">
+      <label for="text">Text:</label>
+      <textarea name="text" id="text" placeholder="Enter your text here..." required>{{ request.form.text if request.form.text else '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="key">Key:</label>
+      <input type="text" name="key" id="key" placeholder="Enter keyword" value="{{ request.form.key if request.form.key else '' }}" required>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" name="encrypt" class="btn btn-primary">Encrypt</button>
+      <button type="submit" name="decrypt" class="btn btn-secondary">Decrypt</button>
+    </div>
+  </form>
+
+  {% if result %}
+  <div class="result-section">
+    <h3>{{ mode }}</h3>
+    <div class="result-box">
+      <p>{{ result }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if steps %}
+  <div class="steps-section">
+    <h3>Steps</h3>
+    <div class="steps-box">
+      {% for step in steps %}
+      <p>{{ step }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="error-section">
+    <h3>Error</h3>
+    <div class="error-box">
+      <p>{{ error }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="info-section">
+    <h3>How it works:</h3>
+    <ul>
+      <li>The Vigenère cipher uses a keyword to create a repeating key</li>
+      <li>Each letter of the plaintext is shifted by the corresponding letter of the key</li>
+      <li>A = 0, B = 1, ..., Z = 25</li>
+      <li>Ciphertext[i] = (Plaintext[i] + Key[i]) mod 26</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

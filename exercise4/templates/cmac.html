@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CMAC Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">CRYPTOGRAPHY AND NETWORK SECURITY LABORATORY</div>
+    <nav><ul><li><a href="{{ url_for('root') }}">← Back to Dashboard</a></li></ul></nav>
+  </aside>
+
+  <main class="content">
+    <header>
+      <h1>CMAC (Cipher-based Message Authentication Code)</h1>
+      <p style="color:var(--text-light);">Using DES for Message Authentication</p>
+    </header>
+
+    <section class="form-section">
+      <form method="POST">
+        <div class="form-group">
+            <label>Message</label>
+            <textarea name="message" placeholder="Enter message to authenticate..." required style="height: 80px;">{{ input_message if input_message else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Key (Hex)</label>
+            <input type="text" name="key" placeholder="Enter DES key in hex (16 characters)..." required value="{{ input_key if input_key else '' }}">
+        </div>
+        <div class="form-group">
+            <label>Output Bits</label>
+            <input type="number" name="nbits" placeholder="Enter number of bits for CMAC..." required value="{{ input_nbits if input_nbits else 32 }}" min="1" max="64">
+        </div>
+
+        <button type="submit" style="background: var(--warning);">Generate CMAC</button>
+      </form>
+
+      {% if error %}
+      <div class="error-message">Error: {{ error }}</div>
+      {% endif %}
+
+      {% if result %}
+      <div class="result-container">
+        <h3>CMAC Output (Hex):</h3>
+        <div class="output-box" style="color: var(--warning);">{{ result }}</div>
+      </div>
+
+      {% if steps %}
+      <div class="result-container">
+        <h3>CMAC Computation Steps:</h3>
+
+        <!-- Input Processing -->
+        {% if steps.input_processing %}
+        <div class="round-box">
+          <div class="round-header">
+            <span>📝 Input Processing</span>
+          </div>
+          <div class="round-content hidden">
+            {% for key, value in steps.input_processing.items() %}
+            <div class="step-row">
+              <span class="step-label">{{ key|replace('_', ' ')|title }}</span>
+              <span class="step-value">{{ value }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Padding -->
+        {% if steps.padding %}
+        <div class="round-box">
+          <div class="round-header">
+            <span>🔧 Padding</span>
+          </div>
+          <div class="round-content hidden">
+            {% for key, value in steps.padding.items() %}
+            <div class="step-row">
+              <span class="step-label">{{ key|replace('_', ' ')|title }}</span>
+              <span class="step-value">{{ value }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Encryption -->
+        {% if steps.encryption %}
+        <div class="round-box">
+          <div class="round-header">
+            <span>🔐 CBC Encryption</span>
+          </div>
+          <div class="round-content hidden">
+            {% for key, value in steps.encryption.items() %}
+            <div class="step-row">
+              <span class="step-label">{{ key|replace('_', ' ')|title }}</span>
+              <span class="step-value">{{ value }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Final Processing -->
+        {% if steps.final_processing %}
+        <div class="round-box">
+          <div class="round-header">
+            <span>🎯 Final Processing</span>
+          </div>
+          <div class="round-content hidden">
+            {% for key, value in steps.final_processing.items() %}
+            <div class="step-row">
+              <span class="step-label">{{ key|replace('_', ' ')|title }}</span>
+              <span class="step-value">{{ value }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Final CMAC -->
+        <div class="round-box">
+          <div class="round-header">
+            <span>✅ Final CMAC</span>
+          </div>
+          <div class="round-content">
+            <div class="step-row">
+              <span class="step-label">CMAC Value</span>
+              <span class="step-value" style="color: var(--warning); font-weight: bold;">{{ steps.final_cmac }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+    </section>
+  </main>
+
+  <script>
+    // Add click handlers for collapsible sections
+    document.addEventListener('DOMContentLoaded', function() {
+      const headers = document.querySelectorAll('.round-header');
+      headers.forEach(header => {
+        header.addEventListener('click', function() {
+          const content = this.nextElementSibling;
+          content.classList.toggle('hidden');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
